@@ -1,0 +1,62 @@
+name: Scrape RWA Properties
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'Platforms to scrape (comma-separated, or "all")'
+        required: false
+        default: 'all'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run scrapers
+        env:
+          PROPBASE_EMAIL: ${{ secrets.PROPBASE_EMAIL }}
+          PROPBASE_PASSWORD: ${{ secrets.PROPBASE_PASSWORD }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+        run: |
+          python run_all_scrapers.py --include-propbase
+      
+      - name: Commit and push scraped data
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-update: Scraped properties $(date +'%Y-%m-%d %H:%M:%S')" && git push)
+      
+      - name: Create summary
+        run: |
+          echo "## 📊 Scraping Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Count properties by platform
+          for platform in data/*/; do
+            if [ -d "$platform" ]; then
+              platform_name=$(basename "$platform")
+              property_count=$(find "$platform" -name "properties_*.json" -exec cat {} \; | grep -o '"property_id"' | wc -l)
+              echo "- **$platform_name**: $property_count properties" >> $GITHUB_STEP_SUMMARY
+            fi
+          done

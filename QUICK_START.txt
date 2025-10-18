@@ -1,0 +1,136 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                  RWA PROPERTY SCRAPER - FOGFEED                      ║
+║                         QUICK START GUIDE                            ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+📦 WHAT YOU GOT:
+
+✅ Complete scraping system for 7 tokenized real estate platforms
+✅ Automated GitHub Actions (runs every 6 hours)
+✅ Enhanced Lofty scraper with 12-16 documents per property
+✅ API layer for serving data to your website
+✅ Comprehensive property data + all PDFs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 3-STEP SETUP:
+
+1️⃣  COPY FILES TO YOUR FOGFEED REPO
+   - Extract this package
+   - Copy everything into your FogFeed GitHub repo
+   - Keep the folder structure intact
+
+2️⃣  ADD GITHUB SECRETS
+   Go to: https://github.com/SSINGH1018/FogFeed/settings/secrets/actions
+   
+   Add these secrets:
+   • PROPBASE_EMAIL: rwafogfeed@gmail.com
+   • PROPBASE_PASSWORD: FogFeed$12
+
+3️⃣  PUSH TO GITHUB
+   git add .
+   git commit -m "Add RWA property scraper"
+   git push
+
+   Done! Scraper runs automatically every 6 hours.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💻 MANUAL TESTING (OPTIONAL):
+
+Before pushing to GitHub, test locally:
+
+cd FogFeed
+bash setup.sh
+python3 run_all_scrapers.py --include-propbase
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 USING THE DATA:
+
+After scraping, data is saved in:
+
+FogFeed/
+└── data/
+    ├── lofty/
+    │   ├── properties_20251018_200000.json  ← All property data
+    │   ├── properties_20251018_200000.csv   ← Spreadsheet format
+    │   └── documents/                       ← All PDFs
+    ├── reental/
+    ├── fraxtor/
+    └── ...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔌 CONNECT TO YOUR WEBSITE:
+
+Option 1: Direct JSON import (simplest)
+  import properties from './data/lofty/properties_latest.json'
+
+Option 2: Python API (recommended)
+  from api import PropertyDataAPI
+  api = PropertyDataAPI()
+  properties = api.get_all_properties()
+
+Option 3: REST API (for frontend)
+  See INTEGRATION_GUIDE.md for FastAPI setup
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📄 FULL DOCUMENTATION:
+
+• README.md              - Overview
+• INTEGRATION_GUIDE.md   - Complete setup & usage guide
+• .env.example          - Configuration template
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 WHAT EACH FILE DOES:
+
+Core Files:
+  • base_scraper.py          - Base scraper framework
+  • run_all_scrapers.py      - Main runner script
+  • api.py                   - Data API for your website
+  
+Scrapers:
+  • scrapers/lofty_scraper.py    - Enhanced Lofty scraper
+  • scrapers/reental_scraper.py  - Reental scraper
+  • scrapers/fraxtor_scraper.py  - Fraxtor scraper
+  • scrapers/binaryx_scraper.py  - Binaryx scraper
+  • scrapers/mogul_scraper.py    - Mogul scraper
+  • scrapers/propbase_scraper.py - Propbase scraper (needs login)
+  • scrapers/realt_scraper.py    - RealT scraper (needs proxy)
+
+Automation:
+  • .github/workflows/scrape-properties.yml  - GitHub Actions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ FEATURES:
+
+✓ Scrapes 7 platforms automatically
+✓ Runs every 6 hours via GitHub Actions
+✓ Downloads ALL property documents (12-16 per property)
+✓ Detects new listings automatically
+✓ Saves in JSON/CSV format
+✓ Ready-to-use API included
+✓ Full property details + financials
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ QUESTIONS?
+
+Read INTEGRATION_GUIDE.md for:
+• Step-by-step instructions
+• API usage examples
+• Troubleshooting
+• Configuration options
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 YOU'RE ALL SET!
+
+Your FogFeed website will now have access to comprehensive data from
+7 tokenized real estate platforms, updated automatically every 6 hours!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
