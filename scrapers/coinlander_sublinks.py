@@ -1,51 +1,50 @@
 import asyncio
 import csv
-from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
 import os
 import time
 
-async def coinlanderurls(csv_filename="coinlander_urls.csv"):
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.goto("https://coinlander.com/projects")
-
-        await page.wait_for_selector("button")
-        properties = await page.locator("button")
-        property_count = await properties.count()
+def coinlanderurls(csv_filename="coinlander_urls.csv"):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://coinlander.com/projects")
+        page.wait_for_selector("button:has-text('Invest')")
+        properties = page.locator("button:has-text('Invest')")
+        property_count = properties.count()
+        print("Total buttons found:", property_count)
         url = []
 
-        async for i in range(property_count):
-            prop = await properties.nth(i)
+        for i in range(property_count):
+            prop = properties.nth(i)
             # Get text to identify it
-            text = await prop.text_content()
+            text = prop.text_content()
             print(f"Clicking button {i+1}/{property_count}: {text}")
-
-            async with page.expect_navigation(timeout=10000):
-                prop.click()
+            prop.click()
 
             # Wait or scrape data from new page
-            time.sleep(2)
+            page.wait_for_selector("a") 
             print("Current URL:", page.url)
+            url.append([page.url])
 
             # You could extract info here, then go back
             # Go back if needed
-            await page.go_back()
-            await page.wait_for_selector("button")
-        await browser.close()
+            page.go_back()
+        browser.close()
 
     # Define the root directory for saving the CSV file.
-    root = await os.path.dirname(os.path.abspath(__file__))    
+    root = os.path.dirname(os.path.abspath(__file__))    
 
     # Check if the file already exists
-    file_exists = await os.path.isfile(os.path.join(root, csv_filename))
+    file_exists = os.path.isfile(os.path.join(root, csv_filename))
 
     # Append the data to the CSV file.
-    async with open(os.path.join(root, csv_filename), "a+", newline="") as csvfile:
-        writer = await csv.writer(csvfile)
+    with open(os.path.join(root, csv_filename), "a+", newline="") as csvfile:
+        writer = csv.writer(csvfile)
         # Write the header only if the file doesn't exist
         if not file_exists:
-            await writer.writerow(["URL"])
-        await writer.writerows(url)  
+            writer.writerow(["URL"])
+        writer.writerows(url)  
 
-asyncio.run(coinlanderurls())
+if __name__ == "__main__":
+    coinlanderurls()
